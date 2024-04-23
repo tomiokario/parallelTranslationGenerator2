@@ -4,8 +4,10 @@
 Streamlit app
 - https://paralleltranslationgenerator2.streamlit.app/
 
-DeepL APIを持っていない人は以下を使用してください
-- https://github.com/tomiokario/parallelTranslationGenerator
+DeepL APIが必要です
+- [DeepL API Free](https://support.deepl.com/hc/ja/articles/360021200939-DeepL-API-Free)プランで取得できます
+- APIが用意できない場合は以下を使用してください
+  - https://github.com/tomiokario/parallelTranslationGenerator
 
 ### 概要
 英日対訳を作成するWebアプリケーション
