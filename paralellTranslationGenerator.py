@@ -27,14 +27,27 @@ def en2jp_deepl(translate_text):
     if DEEPL_KEY:
         params = {
             "auth_key": DEEPL_KEY,
-            "text": translate_text,
+            "text": [translate_text],
             "source_lang": 'EN',
             "target_lang": 'JA'
         }
 
-        request = requests.post("https://api-free.deepl.com/v2/translate", data=params)
+        request = requests.post("https://api-free.deepl.com/v2/translate", json=params)
         result = request.json()
-        return result["translations"][0]["text"]
+        
+        # APIレスポンスのデバッグ出力（デバッグ時のみ有効化）
+        # st.write("API Response:", result)
+        
+        # エラーハンドリングを追加
+        if "translations" in result:
+            return result["translations"][0]["text"]
+        elif "error" in result:
+            error_msg = f"DeepL API Error: {result['error'].get('message', 'Unknown error')}"
+            st.error(error_msg)
+            return ""
+        else:
+            st.error(f"Unexpected API response format: {result}")
+            return ""
     else:
         st.warning("Please enter the DeepL API Key in the sidebar.")
         return ""
