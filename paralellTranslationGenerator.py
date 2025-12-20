@@ -25,19 +25,39 @@ st.sidebar.write("DeepL API: https://www.deepl.com/ja/your-account/keys")
 def en2jp_deepl(translate_text):
 
     if DEEPL_KEY:
-        params = {
-            "auth_key": DEEPL_KEY,
-            "text": [translate_text],
+        # API キーから余分な空白を除去
+        api_key = DEEPL_KEY.strip()
+
+        # Free/Pro の判定（:fx で終わる場合は Free プラン）
+        if api_key.endswith(':fx'):
+            api_url = "https://api-free.deepl.com/v2/translate"
+        else:
+            api_url = "https://api.deepl.com/v2/translate"
+
+        # Authorization ヘッダーを使用（新方式）
+        headers = {
+            "Authorization": f"DeepL-Auth-Key {api_key}"
+        }
+
+        # フォームデータ形式で送信（JSON ではない点に注意）
+        payload = {
+            "text": translate_text,
             "source_lang": 'EN',
             "target_lang": 'JA'
         }
 
-        request = requests.post("https://api-free.deepl.com/v2/translate", json=params)
+        request = requests.post(api_url, headers=headers, data=payload)
+
+        # HTTPステータスコードをチェック
+        if request.status_code != 200:
+            st.error(f"DeepL API Error: HTTP {request.status_code} - {request.text}")
+            return ""
+
         result = request.json()
-        
+
         # APIレスポンスのデバッグ出力（デバッグ時のみ有効化）
         # st.write("API Response:", result)
-        
+
         # エラーハンドリングを追加
         if "translations" in result:
             return result["translations"][0]["text"]
